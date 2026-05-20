@@ -11,7 +11,7 @@ terraform {
 
 
 provider "aws" {
-  region = "eu-central-1"
+  region = var.aws_region
 }
 
 resource "aws_s3_bucket" "my-test-bucket" {
@@ -24,4 +24,11 @@ resource "aws_s3_bucket" "my-test-bucket" {
     Owner       = "Walyson Silva"
     Updated     = "2026-05-18"
   }
+}
+
+resource "aws_instance" "example" {
+  ami           = var.instance_ami
+  instance_type = var.instance_type
+
+  tags = var.instance_tags
 }
