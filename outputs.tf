@@ -12,5 +12,5 @@ output "bucket_domain_name" {
 }
 
 output "ips_file_path" {
-  value = "${aws_s3_bucket.this.bucket}/${aws_s3_bucket_object.this.key}"
+  value = "${aws_s3_bucket.this.bucket}/${aws_s3_object.this.key}"
 }

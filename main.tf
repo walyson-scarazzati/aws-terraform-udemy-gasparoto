@@ -7,6 +7,9 @@ terraform {
       version = "~> 6.28.0"
     }
   }
+  backend "s3" {
+   
+  }
 }
 
 
@@ -31,4 +34,25 @@ resource "aws_instance" "example" {
   instance_type = var.instance_type
 
   tags = var.instance_tags
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_s3_bucket" "remote-state" {
+  bucket = "tfstate-${data.aws_caller_identity.current.account_id}"
+
+  tags = {
+    Description = "Stores terraform remote state files"
+    ManagedBy   = "Terraform"
+    Owner       = "Cleber Gasparoto"
+    CreatedAt   = "2021-01-24"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "remote_state" {
+  bucket = aws_s3_bucket.remote-state.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
