@@ -10,6 +10,7 @@
   "author": "Cleber Gasparoto <chgasparoto@gmail.com> (https://github.com/chgasparoto)",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
     "joi": "^17.3.0"
   }
 }

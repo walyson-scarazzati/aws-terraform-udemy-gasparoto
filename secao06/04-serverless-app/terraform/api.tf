@@ -40,7 +40,12 @@ resource "aws_api_gateway_integration" "this" {
 
 resource "aws_api_gateway_deployment" "this" {
   rest_api_id = aws_api_gateway_rest_api.this.id
-  stage_name  = "dev"
 
   depends_on = [aws_api_gateway_integration.this]
+}
+
+resource "aws_api_gateway_stage" "dev" {
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  deployment_id = aws_api_gateway_deployment.this.id
+  stage_name    = "dev"
 }

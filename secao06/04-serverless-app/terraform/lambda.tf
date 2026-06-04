@@ -13,7 +13,8 @@ resource "aws_lambda_layer_version" "joi" {
   layer_name          = "joi-layer"
   description         = "joi: 17.3.0"
   filename            = "${local.layers_path}/../${local.layer_name}"
-  compatible_runtimes = ["nodejs14.x"]
+  source_code_hash    = filebase64sha256("${local.layers_path}/../${local.layer_name}")
+  compatible_runtimes = ["nodejs20.x"]
 
   depends_on = [null_resource.build_lambda_layers]
 }
@@ -28,7 +29,7 @@ resource "aws_lambda_function" "s3" {
   function_name = "s3"
   handler       = "index.handler"
   role          = aws_iam_role.s3.arn
-  runtime       = "nodejs14.x"
+  runtime       = "nodejs20.x"
 
   filename         = data.archive_file.s3.output_path
   source_code_hash = data.archive_file.s3.output_base64sha256
@@ -62,10 +63,12 @@ resource "aws_lambda_function" "dynamo" {
   function_name = "dynamo"
   handler       = "index.handler"
   role          = aws_iam_role.dynamo.arn
-  runtime       = "nodejs14.x"
+  runtime       = "nodejs20.x"
 
   filename         = data.archive_file.dynamo.output_path
   source_code_hash = data.archive_file.dynamo.output_base64sha256
+
+  layers = [aws_lambda_layer_version.joi.arn]
 
   timeout     = 30
   memory_size = 128
@@ -82,7 +85,7 @@ resource "aws_lambda_permission" "dynamo" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.dynamo.arn
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.aws_region}:${var.aws_account_id}:*/*"
+  source_arn    = "${aws_api_gateway_rest_api.this.execution_arn}/*/*"
 }
 
 resource "aws_lambda_permission" "sns" {

@@ -49,6 +49,7 @@ exports.handler = async (event) => {
             case 'POST':
                 res = await dynamo.put({ ...params, Item: data }).promise()
                 break;
+            case 'PATCH':
             case 'PUT':
                 res = await dynamo.update({
                     TableName: table,
